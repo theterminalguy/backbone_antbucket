@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name='description' content='Antbucket bucketlist app'>
+    <title>Antbucket | Proverbs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css" />
+    <link rel="stylesheet" href="css/custom/app.css">
+    <link rel="stylesheet" href="css/custom/backbone.modal.css">
+    <link rel="stylesheet" href="css/custom/backbone.modal.theme.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"></link>
+
+</head>
+<body>
+
+<div id="menu"></div>
+<script type="text/template" id="tpl_menu">
+<div class="top-bar">
+  <div class="top-bar-left">
+    <ul class="dropdown menu" data-dropdown-menu>
+      <li class="menu-text">AntBucket</li>
+    </ul>
+  </div>
+  <div class="top-bar-right">
+    <ul class="dropdown menu" data-dropdown-menu>
+     <% if(!Check.authenticated())  { %>  
+        <li ><a href="#/login">Login</a></li>
+        <li><a href="#/register">Register</a></li>
+     <% } else  { %> 
+      <li><a href="#/logout">Logout</a></li>
+     <% }  %>
+    </ul>
+  </div>
+</div>
+</script>
+
+
+
+  <div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
+
+
+
+<script type="text/template" id="tpl_dashboard">
+<div class="large-8 medium-8 small-12 medium-offset-2 large-offset-2 columns">
+          <div class="callout">
+            <div class="top-bar-right">
+              <ul class="menu">
+                <li><input type="search" placeholder="Search"></li>
+                <li><button type="button" class="button">Search</button></li>
+              </ul>
+          </div> 
+    <h3>Dashboard</h3>
+            <hr />
+            <button class="button" id="btn_add_bucket">Add New</button>
+              <table id="todo">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th colspan="3"></th>
+                  </tr>
+                </thead>
+              </table>
+          </div>
+      </div>
+
+</script>
+
+
+
+<script type="text/template" id="bucket_item">
+  <td><%- name %></td>
+  <td><a href="#/bucket/<%- id %>/show" class="button info">Items</a></td>
+  <td>
+    <a class="button round success" id="btn_edit" href="#/bucket/<%- id %>/edit">
+      <i class="fi-pencil"></i>
+    </a>
+  </td>
+  <td>
+    <a class="button round alert" id="btn_delete" href="#/bucket/<%- id %>/delete">
+      <i class="fi-x"></i>
+    </a>
+  </td>
+</script>
+
+
+
+
+<script type="text/template" id="tpl_item_board">
+<div class="large-8 medium-8 small-12 medium-offset-2 large-offset-2 columns">
+          <div class="callout">
+            <div class="top-bar-right">
+              <ul class="menu">
+                <li><input type="search" placeholder="Search"></li>
+                <li><button type="button" class="button">Search</button></li>
+              </ul>
+          </div> 
+    <h3>Dashboard</h3>
+            <hr />
+            <button class="button" id="">Add New</button>
+              <table id="todo">
+                <thead>
+                  <tr>
+                    <th>Created_at</th>
+                    <th>Name</th>
+                    <th>Done</th>
+                    <th colspan="3"></th>
+                  </tr>
+                </thead>
+              </table>
+          </div>
+      </div>
+
+</script>
+
+<script type="text/template" id="tpl_item">
+  <td></td>
+  <td>
+    <a class="button round success" id="btn_edit" href="">
+      <i class="fi-pencil"></i>
+    </a>
+  </td>
+  <td>
+    <a class="button round alert" id="btn_delete" href="#">
+      <i class="fi-x"></i>
+    </a>
+  </td>
+</script>
+
+
+  
+  <div id="loading"></div>
+
+
+  <div id="app">
+  </div>
+
+
+<script type="text/template" id="tpl_login">
+    <div class="row">
+      <div class="large-8 medium-8 small-12 medium-offset-2 large-offset-2 columns">
+          <div class="callout">
+              <h2>Login</h2>
+          <form name='frm_login'>
+            <label for='email'>Email
+              <input type="email" placeholder="e.g. you@domain.com" id='txt_email' required/>
+            </label>
+
+              <label for=password>Password
+                <input type="password" id='txt_password' minlength="5"  required/>
+              </label>
+                  <div class="row">&nbsp;</div>
+              <div class="row">
+                <div class="columns">
+                  <button type="submit" class="button" id="btn_login">Login</button>
+                    <input type="reset" class="alert button" value="Cancel"/>   
+                </div>
+              </div>
+            </form>
+          </div>
+      </div>
+    </div> 
+
+</script>
+
+
+<script type="text/template" id='tpl_regiser'> 
+
+
+    <div class="row">
+      <div class="large-8 medium-8 small-12 medium-offset-2 large-offset-2 columns">
+          <div class="callout">
+              <h2>Create an Account</h2>
+          <form name='frm_register' data-abide>
+            <label for='email'>Email <small><em>(Required)</em></small>
+              <input type="email" placeholder="e.g. you@domain.com" id='txt_email'  required/>
+            </label>
+
+              <label for="password1">Password <small><em>(Required)</em></small>
+                <input type="password" id='txt_password1' minlength="5" pattern="[a-zA-Z]+" required/>
+              </label>
+
+              <label for="password2">Re-type Password <small><em>(Required)</em></small>
+                <input type="password" id='txt_password2' minlength="5"  pattern="[a-zA-Z]+" data-equalto="password" required/>
+              </label>
+
+                  <div class="row">&nbsp;</div>
+              <div class="row">
+                <div class="columns">
+                  <button class="button" id="btn_create">Create</button>
+                  <input type="reset" class="alert button" value="Cancel"/>   
+                </div>
+              </div>
+            </form>
+          </div>
+      </div>
+    </div>
+</script>
+
+
+
+
+
+
+  <div class="modal"></div>
+
+  <script type="text/template" id="modal-template">
+    <div class="bbm-modal__topbar">
+      <h3 class="bbm-modal__title">Add Bucket</h3>
+    </div>
+    <div class="bbm-modal__section">
+      <label for='email'>Enter a wish:</small>
+        <input type="text" placeholder="e.g. travel to Mars" id='txt_bucket_name'  value=" " required/>
+      </label>
+    </div>
+    <div class="bbm-modal__bottombar">
+      <a href="#" class="button success" id="btn_save">Save</a>
+      <a href="#" class="button alert" id="btn_close">close</a>
+    </div>
+  </script>
+
+
+
+  <div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
+  <div class="row">&nbsp;</div>
+  
+
+  <script src="js/vendor/jquery/jquery.js"></script>
+  <script src="js/vendor/jquery/jquery-storage.js"></script>
+  <script src="js/vendor/underscore/underscore.js"></script>
+  <script src="js/vendor/backbone/backbone.js"></script>
+  <script src="js/vendor/backbone/backbone.localStorage.js"></script>
+  <script src="js/vendor/backbone/modal.js"></script>
+  <script src="js/vendor/foundation/foundation.js"></script>
+  
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+  <script src="js/helpers/spin.min.js"></script>
+  <script src="js/helpers/check.js"></script>
+  <script src="js/helpers/spinner.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/helpers/db.js"></script>
+  <script src="js/api/antbucket.js"></script> 
+  <script src="js/routers/route.js"></script>
+  <script src="js/models/user.js"></script>
+  <script src="js/models/bucket_list.js"></script>
+  <script src="js/models/item.js"></script>
+  <script src="js/views/menu.js"></script>
+  <script src="js/views/login.js"></script>
+  <script src="js/views/register.js"></script>
+  <script src="js/collections/bucket_lists.js"></script>
+  <script src="js/collections/items.js"></script>
+  <script src="js/views/bucket_list/bucket_list.js"></script>
+  <script src="js/views/bucket_list/bucket_lists.js"></script>
+  <script src="js/views/item/item.js"></script>
+  <script src="js/views/item/items.js"></script>
+  <script src="js/views/dashboard.js"></script>
+  <script src="js/views/bucket_modal.js"></script>
+
+</body>
+</html>
+
+
